@@ -443,8 +443,10 @@ public class Printer implements MethodChannel.MethodCallHandler {
             printerConnection.open();
 
         } catch (ConnectionException e) {
-            DemoSleeper.sleep(1000);
+            setStatus("Error connection and reconnection", context.getString(R.string.connectingColor));
             disconnect();
+            DemoSleeper.sleep(1000);
+            connect(isBluetoothPrinter);
             return null;
         }
 
