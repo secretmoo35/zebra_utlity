@@ -189,27 +189,39 @@ class Printer{
 
    func printData(data: NSString) {
     //ToDo improve sending data
-     DispatchQueue.global(qos: .utility).async {
-      let dataBytes = Data(bytes: data.utf8String!, count: data.length)
+   DispatchQueue.global(qos: .utility).async {
+    //   let dataBytes = Data(bytes: data.utf8String!, count: data.length)
       DispatchQueue.main.async {
         self.setStatus(message: "Sending Data", color: self.connectingColor)
-             }
-        if self.isZebraPrinter == true {
-              var error: NSError?
-              let result = self.connection?.write(dataBytes, error: &error)
-              if result == -1, let error = error {
-                print(error)
-                self.disconnect()
-                return
-              }
+       }
+        let dataString: String = data as String
+        if let dataBytes = dataString.data(using: .utf8) {
+            if let dataStringConvert = String(data: dataBytes, encoding: .utf8) {
+                self.setStatus(message: "Sending Data...", color: self.connectingColor)
+            } else {
+                print("Cannot convert bytes to data string")
+                self.setStatus(message: "Send Data Failed(Cannot convert bytes to data string)", color: self.connectingColor)
+            }
+
+            if self.isZebraPrinter == true {
+                    var error: NSError?
+                    let result = self.connection?.write(dataBytes, error: &error)
+                    if result == -1, let error = error {
+                        print(error)
+                        self.disconnect()
+                        return
+                    }
+            } else {
+                    self.wifiManager?.posWriteCommand(with: dataBytes, withResponse: { (result) in
+                })
+            }    
+            sleep(1)
+                DispatchQueue.main.async {
+                    self.setStatus(message: self.doneStr, color: self.connectedColor)
+                }
         } else {
-            self.wifiManager?.posWriteCommand(with: dataBytes, withResponse: { (result) in
-                
-            })
-        }
-      sleep(1)
-        DispatchQueue.main.async {
-            self.setStatus(message: self.doneStr, color: self.connectedColor)
+            print("Cannot convert string to data bytes")
+            self.setStatus(message: "Send Data Failed(Cannot convert string to data bytes)", color: self.connectingColor)
         }
      }
     }
