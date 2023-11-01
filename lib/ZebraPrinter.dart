@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 enum EnumMediaType { Label, BlackMark, Journal }
+
 enum Command { calibrate, mediaType, darkness }
 
 class ZebraPrinter {
@@ -14,9 +15,14 @@ class ZebraPrinter {
 
   bool isRotated = false;
 
-  ZebraPrinter(String id, this.onPrinterFound, this.onPrinterDiscoveryDone,
-      this.onDiscoveryError, this.onChangePrinterStatus,
-      {this.onPermissionDenied}) {
+  ZebraPrinter(
+    String id,
+    this.onPrinterFound,
+    this.onPrinterDiscoveryDone,
+    this.onDiscoveryError,
+    this.onChangePrinterStatus, {
+    this.onPermissionDenied,
+  }) {
     channel = MethodChannel('ZebraPrinterObject' + id);
     channel.setMethodCallHandler(nativeMethodCallHandler);
   }
@@ -31,7 +37,7 @@ class ZebraPrinter {
     });
   }
 
-  _setSettings(Command setting, dynamic values) {
+  _setSettings(Command setting, dynamic values, String ipAddress) {
     String command = "";
     switch (setting) {
       case Command.mediaType:
@@ -65,65 +71,54 @@ class ZebraPrinter {
     }
 
     try {
-      channel.invokeMethod("setSettings", {"SettingCommand": command});
+      channel.invokeMethod("setSettings", {"SettingCommand": command, "IpAddress": ipAddress});
     } on PlatformException catch (e) {}
   }
 
-  setDarkness(int darkness) {
-    _setSettings(Command.darkness, darkness.toString());
+  setDarkness(int darkness, String ipAddress) {
+    _setSettings(Command.darkness, darkness.toString(), ipAddress);
   }
 
-  setMediaType(EnumMediaType mediaType) {
-    _setSettings(Command.mediaType, mediaType);
+  setMediaType(EnumMediaType mediaType, String ipAddress) {
+    _setSettings(Command.mediaType, mediaType, ipAddress);
   }
 
-  connectToPrinter(String address) {
-    channel.invokeMethod("connectToPrinter", {"Address": address});
+  printSetting(String command, String ipAddress) {
+    channel.invokeMethod("setSettings", {"SettingCommand": command, "IpAddress": ipAddress});
   }
 
-  connectToGenericPrinter(String address) {
-    channel.invokeMethod("connectToGenericPrinter", {"Address": address});
-  }
-
-  print(String data) {
+  print(String data, String ipAddress, bool isSetup) {
     if (!data.contains("^PON")) data = data.replaceAll("^XA", "^XA^PON");
 
     if (isRotated) {
       data = data.replaceAll("^PON", "^POI");
     }
-    channel.invokeMethod("print", {"Data": data});
+    channel.invokeMethod("print", {"Data": data, "IpAddress": ipAddress , "IsSetup": isSetup});
   }
 
-  disconnect() {
-    channel.invokeMethod("disconnect", null);
-  }
-
-  calibratePrinter() {
-    _setSettings(Command.calibrate, null);
-  }
-
-  isPrinterConnected() {
-    channel.invokeMethod("isPrinterConnected");
-  }
-
-  rotate() {
-    this.isRotated = !this.isRotated;
+  calibratePrinter(String ipAddress) {
+    _setSettings(Command.calibrate, null, ipAddress);
   }
 
   Future<dynamic> nativeMethodCallHandler(MethodCall methodCall) async {
     if (methodCall.method == "printerFound") {
       onPrinterFound!(
-          methodCall.arguments["Name"],
-          methodCall.arguments["Address"],
-          methodCall.arguments["IsWifi"].toString() == "true" ? true : false);
+        methodCall.arguments["Name"],
+        methodCall.arguments["Address"],
+        methodCall.arguments["IsWifi"].toString() == "true" ? true : false,
+      );
     } else if (methodCall.method == "changePrinterStatus") {
       onChangePrinterStatus!(
-          methodCall.arguments["Status"], methodCall.arguments["Color"]);
+        methodCall.arguments["Status"],
+        methodCall.arguments["Color"],
+      );
     } else if (methodCall.method == "onPrinterDiscoveryDone") {
       onPrinterDiscoveryDone!();
     } else if (methodCall.method == "onDiscoveryError") {
-      onDiscoveryError!(methodCall.arguments["ErrorCode"]
-          , methodCall.arguments["ErrorText"]);
+      onDiscoveryError!(
+        methodCall.arguments["ErrorCode"],
+        methodCall.arguments["ErrorText"],
+      );
     }
     return null;
   }
