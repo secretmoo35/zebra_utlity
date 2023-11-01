@@ -261,26 +261,26 @@ public class Printer implements MethodChannel.MethodCallHandler {
                     printer = ZebraPrinterFactory.getInstance(printerConnection);
 
                     if (isSetup && !isSetupReady) {
-                        isSetupReady = true;
-                        String setting = "! U1 setvar \"print.tone\" \"70\"\n" +
-                                "! U1 setvar \"media.type\" \"journal\"\n" +
-                                "! U1 setvar \"bluetooth.le.controller_mode\" \"classic\"" +
-                                "! U1 setvar \"bluetooth.minimum_security_mode\" \"1\"" +
-                                "! U1 setvar \"media.speed\" \"10\"" +
-                                "! U1 setvar \"power.low_battery_timeout\" \"0\"" +
-                                "! U1 setvar \"power.sleep.enable\" \"off\"" +
-                                "! U1 setvar \"bluetooth.enable\" \"on\"" +
-                                "! U1 setvar \"bluetooth.discoverable\" \"on\"" +
-                                "! U1 setvar \"power.dtr_power_off\" \"off\"" +
-                                "! U1 setvar \"power.inactivity_timeout\" \"0\"" +
-                                "! U1 setvar \"power.sleep.unassociated\" \"off\"" +
-                                "! U1 setvar \"cradle.comm.handshake\" \"none\"" +
-                                "! U1 setvar \"cradle.comm.baud\" \"9600\"" +
-                                "! U1 setvar \"comm.handshake\" \"none\"" +
-                                "! U1 setvar \"comm.baud\" \"9600\"";
+                        // isSetupReady = true;
+                        // String setting = "! U1 setvar \"print.tone\" \"70\"\n" +
+                        //         "! U1 setvar \"media.type\" \"journal\"\n" +
+                        //         "! U1 setvar \"bluetooth.le.controller_mode\" \"classic\"" +
+                        //         "! U1 setvar \"bluetooth.minimum_security_mode\" \"1\"" +
+                        //         "! U1 setvar \"media.speed\" \"10\"" +
+                        //         "! U1 setvar \"power.low_battery_timeout\" \"0\"" +
+                        //         "! U1 setvar \"power.sleep.enable\" \"off\"" +
+                        //         "! U1 setvar \"bluetooth.enable\" \"on\"" +
+                        //         "! U1 setvar \"bluetooth.discoverable\" \"on\"" +
+                        //         "! U1 setvar \"power.dtr_power_off\" \"off\"" +
+                        //         "! U1 setvar \"power.inactivity_timeout\" \"0\"" +
+                        //         "! U1 setvar \"power.sleep.unassociated\" \"off\"" +
+                        //         "! U1 setvar \"cradle.comm.handshake\" \"none\"" +
+                        //         "! U1 setvar \"cradle.comm.baud\" \"9600\"" +
+                        //         "! U1 setvar \"comm.handshake\" \"none\"" +
+                        //         "! U1 setvar \"comm.baud\" \"9600\"";
 
-                        byte[] bytesSetting = convertDataToByte(setting);
-                        printerConnection.write(bytesSetting);
+                        // byte[] bytesSetting = convertDataToByte(setting);
+                        // printerConnection.write(bytesSetting);
                     }
 
                     byte[] bytes = convertDataToByte(data);
