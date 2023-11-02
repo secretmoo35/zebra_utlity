@@ -262,7 +262,7 @@ public class Printer implements MethodChannel.MethodCallHandler {
 
                     if (isSetup && !isSetupReady) {
                         isSetupReady = true;
-                        String setting = "! U1 setvar \"print.tone\" \"70\"\n" +
+                        String setting = "! U1 setvar \"print.tone\" \"60\"\n" +
                                 "! U1 setvar \"media.type\" \"journal\"\n" +
                                 "! U1 setvar \"bluetooth.le.controller_mode\" \"classic\"" +
                                 "! U1 setvar \"bluetooth.minimum_security_mode\" \"1\"" +
