@@ -66,7 +66,7 @@ class Printer{
             let args = FlutterMethodCall.arguments
             let myArgs = args as? [String: Any]
             if(FlutterMethodCall.method == "print"){
-                self.printData(data: myArgs?["Data"] as! NSString)
+                self.printData(data: myArgs?["Data"] as! NSString, ipAddress: myArgs?["IpAddress"] as! NSString);
             } else if(FlutterMethodCall.method == "checkPermission"){
                 FlutterResult(true)
             } else if(FlutterMethodCall.method == "disconnect"){
@@ -79,7 +79,7 @@ class Printer{
                 self.discoveryPrinters()
             } else if(FlutterMethodCall.method == "setSettings") {
                 let settingCommand = myArgs?["SettingCommand"] as? NSString
-                        self.setSettings(settings: settingCommand!)
+                        self.setSettings(settings: settingCommand!, ipAddress: myArgs?["IpAddress"] as! NSString)
             } else if(FlutterMethodCall.method == "connectToPrinter" || FlutterMethodCall.method == "connectToGenericPrinter" ) {
                    let address = myArgs?["Address"] as? String
                 DispatchQueue.global(qos: .utility).async { self.connectToSelectPrinter(address: address!)
@@ -167,8 +167,8 @@ class Printer{
         }
     }
 
-    func setSettings(settings: NSString){
-        printData(data: settings)
+    func setSettings(settings: NSString, ipAddress: NSString){
+        printData(data: settings, ipAddress: ipAddress)
     }
 
     func disconnect() {
@@ -187,13 +187,18 @@ class Printer{
         }
     }
 
-   func printData(data: NSString) {
+   func printData(data: NSString, ipAddress: NSString) {
     //ToDo improve sending data
    DispatchQueue.global(qos: .utility).async {
-    //   let dataBytes = Data(bytes: data.utf8String!, count: data.length)
+
+    if self.connection?.isConnected() != true {
+        self.connectToSelectPrinter(address: ipAddress as String)
+    }
+
       DispatchQueue.main.async {
         self.setStatus(message: "Sending Data", color: self.connectingColor)
        }
+
         let dataString: String = data as String
         if let dataBytes = dataString.data(using: .utf8) {
             if let dataStringConvert = String(data: dataBytes, encoding: .utf8) {
