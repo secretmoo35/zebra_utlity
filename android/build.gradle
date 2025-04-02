@@ -22,10 +22,12 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
+    namespace = "com.professor.zebrautility"
+
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 22
     }
     lintOptions {
         disable 'InvalidPackage'
